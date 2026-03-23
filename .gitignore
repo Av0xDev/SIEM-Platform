@@ -1,0 +1,14 @@
+.env
+*.log
+__pycache__/
+*.pyc
+.venv/
+target/
+*.class
+vendor/
+.bundle/
+node_modules/
+dist/
+.idea/
+.vscode/
+*.iml
