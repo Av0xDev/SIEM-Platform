@@ -1,0 +1,8 @@
+{
+    "name": "siem-platform/webhook-service",
+    "description": "SIEM Platform Webhook Service",
+    "version": "1.0.0",
+    "require": {
+        "php": ">=8.0"
+    }
+}
