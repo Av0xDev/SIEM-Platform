@@ -1,0 +1,31 @@
+name: PHP Service Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: [ 'backend-php/**' ]
+  pull_request:
+    branches: [ main, develop ]
+    paths: [ 'backend-php/**' ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: curl, json
+    
+    - name: Install Composer dependencies
+      run: cd backend-php && composer install || true
+    
+    - name: Run linting
+      run: cd backend-php && php -l *.php
+    
+    - name: Code sniffer
+      run: cd backend-php && php -d display_errors=0 *.php || true

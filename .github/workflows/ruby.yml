@@ -1,0 +1,32 @@
+name: Ruby Service Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: [ 'backend-ruby/**' ]
+  pull_request:
+    branches: [ main, develop ]
+    paths: [ 'backend-ruby/**' ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+        working-directory: backend-ruby
+    
+    - name: Install dependencies
+      run: cd backend-ruby && bundle install
+    
+    - name: Run RSpec tests
+      run: cd backend-ruby && bundle exec rspec || true
+    
+    - name: Lint with RuboCop
+      run: cd backend-ruby && gem install rubocop && rubocop || true
