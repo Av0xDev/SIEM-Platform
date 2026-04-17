@@ -1,0 +1,50 @@
+name: Ruby CI
+on:
+  push:
+    branches: [main, develop]
+    paths: ['backend-ruby/**']
+  pull_request:
+    branches: [main, develop]
+    paths: ['backend-ruby/**']
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: backend-ruby
+      - run: bundle exec rubocop
+        working-directory: backend-ruby
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: backend-ruby
+      - run: bundle exec rspec
+        working-directory: backend-ruby
+
+  build-docker:
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: ./backend-ruby
+          push: true
+          tags: ghcr.io/${{ github.repository }}/backend-ruby:${{ github.sha }}

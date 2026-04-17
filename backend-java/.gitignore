@@ -1,0 +1,7 @@
+target/
+*.class
+*.jar
+*.war
+.env
+.mvn/
+!.mvn/wrapper/
