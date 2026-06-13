@@ -60,8 +60,8 @@ services:
       - "5000:5000"
     environment:
       FLASK_ENV: production
-      DATABASE_URL: mongodb://mongodb:27017/siem
-      POSTGRES_URL: postgresql://postgresql:5432/siem
+      DATABASE_URL: ******mongodb:27017/siem
+      POSTGRES_URL: ******postgresql:5432/siem
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
     depends_on:
       mongodb:

@@ -30,7 +30,7 @@
     "clean": "npm run clean:frontend && rm -rf backend-python/venv",
     "clean:frontend": "cd frontend && rm -rf node_modules dist",
     "install:frontend": "cd frontend && npm install",
-    "install:python": "cd backend-python && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+    "install:python": "cd backend-python && python3 -m venv venv && venv/bin/pip install -r requirements.txt",
     "install:java": "cd backend-java && mvn clean install",
     "install:ruby": "cd backend-ruby && bundle install",
     "install:php": "cd backend-php && composer install",

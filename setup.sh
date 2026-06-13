@@ -207,7 +207,7 @@ setup_python() {
 
     if [ -f "requirements.txt" ]; then
         print_info "Creating Python virtual environment..."
-        if python3 -m venv venv 2>&1 > /dev/null; then
+        if python3 -m venv venv > /dev/null 2>&1; then
             print_success "Virtual environment created"
 
             print_info "Activating virtual environment and installing dependencies..."

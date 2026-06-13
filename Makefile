@@ -30,7 +30,7 @@ install-frontend: ## Install frontend dependencies
 
 install-python: ## Install Python backend dependencies
 	@echo "$(BLUE)Installing Python backend dependencies...$(NC)"
-	@cd backend-python && python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt
+	@cd backend-python && python3 -m venv venv && venv/bin/pip install -r requirements.txt
 
 install-java: ## Install Java backend dependencies
 	@echo "$(BLUE)Installing Java backend dependencies...$(NC)"
@@ -53,7 +53,7 @@ dev: ## Start frontend in development mode
 
 dev-python: ## Start Python backend
 	@echo "$(BLUE)Starting Python backend...$(NC)"
-	@cd backend-python && . venv/bin/activate && python app.py
+	@cd backend-python && venv/bin/python app.py
 
 dev-java: ## Start Java backend
 	@echo "$(BLUE)Starting Java backend...$(NC)"

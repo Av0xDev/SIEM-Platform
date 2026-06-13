@@ -182,7 +182,7 @@ VITE_API_URL=http://localhost:8080/api
 
 # Python Backend Configuration
 FLASK_ENV=development
-DATABASE_URL=mongodb://localhost:27017
+DATABASE_URL=mongodb://localhost:27017/siem
 POSTGRES_URL=postgresql://localhost:5432/siem
 SECRET_KEY=your-secret-key-here
 

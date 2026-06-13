@@ -49,7 +49,10 @@ npm run dev
 
 # 3. In another terminal, start the Python backend
 cd backend-python
+# On Linux/macOS:
 source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
 python app.py
 
 # 4. In a third terminal, start the Java backend
