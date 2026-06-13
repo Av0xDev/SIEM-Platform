@@ -1,0 +1,61 @@
+{
+  "name": "siem-platform",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Security Information and Event Management (SIEM) platform",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "setup": "bash setup.sh",
+    "dev": "npm run dev:frontend",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build:frontend && cd backend-java && mvn clean install",
+    "test": "npm run test:frontend",
+    "test:frontend": "cd frontend && npm run test",
+    "test:all": "npm run test:frontend && cd backend-python && pytest && cd ../backend-java && mvn test && cd ../backend-ruby && rspec",
+    "lint": "npm run lint:frontend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "format": "npm run format:frontend",
+    "format:frontend": "cd frontend && npm run format",
+    "start:python": "cd backend-python && python app.py",
+    "start:java": "cd backend-java && mvn spring-boot:run",
+    "start:ruby": "cd backend-ruby && ruby app.rb",
+    "start:php": "cd backend-php && php -S localhost:8081",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart",
+    "clean": "npm run clean:frontend && rm -rf backend-python/venv",
+    "clean:frontend": "cd frontend && rm -rf node_modules dist",
+    "install:frontend": "cd frontend && npm install",
+    "install:python": "cd backend-python && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+    "install:java": "cd backend-java && mvn clean install",
+    "install:ruby": "cd backend-ruby && bundle install",
+    "install:php": "cd backend-php && composer install",
+    "install:all": "npm run install:frontend && npm run install:python && npm run install:java && npm run install:ruby && npm run install:php"
+  },
+  "keywords": [
+    "siem",
+    "security",
+    "log-aggregation",
+    "threat-intelligence",
+    "incident-response",
+    "alert-correlation"
+  ],
+  "author": "SIEM Platform Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Av0xDev/SIEM-Platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Av0xDev/SIEM-Platform/issues"
+  },
+  "homepage": "https://github.com/Av0xDev/SIEM-Platform#readme"
+}

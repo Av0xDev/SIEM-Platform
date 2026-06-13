@@ -1,0 +1,198 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # Databases
+  # ============================================================================
+
+  mongodb:
+    image: mongo:latest
+    container_name: siem-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin_password
+      MONGO_INITDB_DATABASE: siem
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - siem-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgresql:
+    image: postgres:15-alpine
+    container_name: siem-postgresql
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: siem
+      POSTGRES_USER: siem
+      POSTGRES_PASSWORD: siem_password
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - siem-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U siem"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Backend Services
+  # ============================================================================
+
+  python-backend:
+    build:
+      context: ./backend-python
+      dockerfile: Dockerfile
+    container_name: siem-python-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: production
+      DATABASE_URL: ******mongodb:27017/siem
+      POSTGRES_URL: ******postgresql:5432/siem
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      postgresql:
+        condition: service_healthy
+    networks:
+      - siem-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  java-backend:
+    build:
+      context: ./backend-java
+      dockerfile: Dockerfile
+    container_name: siem-java-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATA_MONGODB_URI: ******mongodb:27017/siem
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/siem
+      SPRING_DATASOURCE_USERNAME: siem
+      SPRING_DATASOURCE_PASSWORD: siem_password
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      postgresql:
+        condition: service_healthy
+    networks:
+      - siem-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ruby-backend:
+    build:
+      context: ./backend-ruby
+      dockerfile: Dockerfile
+    container_name: siem-ruby-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      RACK_ENV: production
+      PORT: 3000
+      DATABASE_URL: ******postgresql:5432/siem
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - siem-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  php-backend:
+    build:
+      context: ./backend-php
+      dockerfile: Dockerfile
+    container_name: siem-php-backend
+    restart: always
+    ports:
+      - "8081:8000"
+    environment:
+      ENVIRONMENT: production
+      DB_HOST: postgresql
+      DB_USER: siem
+      DB_PASS: siem_password
+      DB_NAME: siem_php
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    networks:
+      - siem-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health.php"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Frontend Service
+  # ============================================================================
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: siem-frontend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      REACT_APP_API_URL: http://java-backend:8080/api
+      VITE_API_URL: http://java-backend:8080/api
+    depends_on:
+      - java-backend
+    networks:
+      - siem-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ============================================================================
+# Volumes
+# ============================================================================
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+  postgresql_data:
+    driver: local
+
+# ============================================================================
+# Networks
+# ============================================================================
+
+networks:
+  siem-network:
+    driver: bridge
